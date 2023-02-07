@@ -20,15 +20,22 @@ pip install -r requirements.txt
 
 ### Пример запуска
 
-Ниже представлен пример запуска для скачивание фото с последнего запуска SpaceX
+Ниже представлен примеры запуска скриптов.
+Для скачивание фото с последнего запуска SpaceX
 ```
-space-telegram> python .\fetch_spacex_images.py   
-
+space-telegram> python .\fetch_spacex_images.py 
 ```
-Запускать основной скрипт, которыый публикует фото рекомендуется  в фоновом режиме
+Скачивание фото с nasa
 ```
-space-telegram> python .\main.py &  
-
+space-telegram> python .\fetch_nasa_images.py 
+```
+Скачивание фото с nasa epic
+```
+space-telegram> python .\fetch_nasa_epic_images.py 
+```
+Запускать основной скрипт, который публикует фото рекомендуется  в фоновом режиме
+```
+space-telegram> python .\main.py & 
 ```
 
 ### Цель проекта
