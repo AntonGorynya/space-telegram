@@ -1,7 +1,7 @@
 import os
 import requests
 from urllib.parse import urlparse
-from common_functions import download_pick
+from common_functions import download_image
 from dotenv import load_dotenv
 
 
@@ -14,27 +14,23 @@ def get_file_extension(url):
     return extension
 
 
-def get_image_list_nasa(nasa_url, nasa_key):
+def get_images_nasa(nasa_url, nasa_key):
     img_limit = 30
-    response = requests.get(
-        nasa_url,
-        params={
-            'api_key': nasa_key,
-            'count': img_limit
-        }
-    ).json()
-    image_list = [img_data['url']
-                  for img_data in response
-                  if img_data['media_type'] == 'image'
-                 ]
-    return image_list
+    params = {'api_key': nasa_key, 'count': img_limit}
+    response = requests.get(nasa_url, params=params).json()
+    response.raise_for_status()
+    images = [img_data['url']
+              for img_data in response
+              if img_data['media_type'] == 'image'
+    ]
+    return images
 
 
 def fetch_nasa(nasa_url, nasa_key):
-    img_list = get_image_list_nasa(nasa_url, nasa_key)
-    for count, url in enumerate(img_list):
+    images = get_images_nasa(nasa_url, nasa_key)
+    for index, url in enumerate(images):
         extension = get_file_extension(url)
-        download_pick(url, f'./images/nasa_{count}{extension}')
+        download_image(url, f'./images/nasa_{index}{extension}')
 
 
 if __name__ == '__main__':
