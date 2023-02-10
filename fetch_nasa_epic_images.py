@@ -11,10 +11,10 @@ NASA_EPIC_PIC_URL = 'https://api.nasa.gov/EPIC/archive/natural/{date}/png/{image
 
 def get_images_epic_nasa(epic_nasa_url, nasa_key):
     max_index = 4
-    response = requests.get(epic_nasa_url, params={'api_key': nasa_key}).json()
+    response = requests.get(epic_nasa_url, params={'api_key': nasa_key})
     response.raise_for_status()
     images = []
-    for index, image_meta in enumerate(response):
+    for index, image_meta in enumerate(response.json()):
         date = datetime.datetime.strptime(
             image_meta['date'],
             '%Y-%m-%d %H:%M:%S'
@@ -32,8 +32,8 @@ def get_images_epic_nasa(epic_nasa_url, nasa_key):
 
 def fetch_epic_nasa(nasa_url, nasa_key):
     images = get_images_epic_nasa(nasa_url, nasa_key)
-    for count, url in enumerate(images):
-        download_image(url, f'./images/nasa_epic_{count}.png')
+    for index, url in enumerate(images):
+        download_image(url, f'./images/nasa_epic_{index}.png')
 
 
 if __name__ == '__main__':

@@ -17,11 +17,11 @@ def get_file_extension(url):
 def get_images_nasa(nasa_url, nasa_key):
     img_limit = 30
     params = {'api_key': nasa_key, 'count': img_limit}
-    response = requests.get(nasa_url, params=params).json()
+    response = requests.get(nasa_url, params=params)
     response.raise_for_status()
-    images = [img_data['url']
-              for img_data in response
-              if img_data['media_type'] == 'image'
+    images = [img_meta['url']
+              for img_meta in response.json()
+              if img_meta['media_type'] == 'image'
     ]
     return images
 

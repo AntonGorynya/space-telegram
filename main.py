@@ -7,11 +7,11 @@ from dotenv import load_dotenv
 
 
 def send_photo_loop(bot, delay_h=4):
-    img_list = os.listdir('./images')
+    images = os.listdir('./images')
     while True:
-        random.shuffle(img_list)
-        for pic in img_list:
-            with open(f'images/{pic}', 'rb') as file:
+        random.shuffle(images)
+        for img in images:
+            with open(f'images/{img}', 'rb') as file:
                 bot.send_photo(chat_id=chat_id, photo=file)
             time.sleep(60 * 60 * delay_h)
 

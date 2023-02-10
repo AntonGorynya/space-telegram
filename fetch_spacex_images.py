@@ -14,16 +14,16 @@ def get_images_spacex(launch_id):
 
 
 def fetch_spacex_by_id(launch_id):
-    for count, url in enumerate(get_images_spacex(launch_id)):
-        download_image(url, f'./images/spacex_{count}.jpg')
+    for index, url in enumerate(get_images_spacex(launch_id)):
+        download_image(url, f'./images/spacex_{index}.jpg')
 
 
 def fetch_spacex_last_launch(latest_launch_url):
     response = requests.get(latest_launch_url)
     response.raise_for_status()
-    for count, url in enumerate(
-            response.json()['links']['flickr']['original']):
-        download_image(url, f'./images/spacex_{count}.jpg')
+    img_meta = response.json()['links']['flickr']['original']
+    for index, url in enumerate(img_meta):
+        download_image(url, f'./images/spacex_{index}.jpg')
 
 
 def create_parser():
