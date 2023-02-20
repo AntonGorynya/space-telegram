@@ -12,8 +12,8 @@ from dotenv import load_dotenv
 def send_photo_loop(bot, delay_h=4):
     images = os.listdir('./images')
     while True:
-        fetch_nasa_epic_images.fetch_epic_nasa()
-        fetch_nasa_images.fetch_nasa()
+        fetch_nasa_epic_images.fetch_epic_nasa('https://api.nasa.gov/EPIC/api/natural/images', nasa_key)
+        fetch_nasa_images.fetch_nasa('https://api.nasa.gov/planetary/apod', nasa_key)
         random.shuffle(images)
         img_meta = read_db()
         for img in images:
@@ -36,6 +36,7 @@ def create_parser():
 
 if __name__ == '__main__':
     load_dotenv()
+    nasa_key = os.environ['NASA_KEY']
     telegram_token = os.environ['TELEGA_KEY']
     chat_id = os.environ['CHAT_ID']
     bot = telegram.Bot(token=telegram_token)
