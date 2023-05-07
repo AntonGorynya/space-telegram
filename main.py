@@ -1,39 +1,48 @@
 import telegram
 import os
+import sys
 import random
 import time
 import argparse
 from fetch_nasa_images import get_images_nasa, NASA_URL
 from fetch_nasa_epic_images import NASA_EPIC_URL, get_images_epic_nasa
 from fetch_spacex_images import LATEST_LAUNCH_URL
+from xkcd import get_max_comic_num, get_xkcd_comic
 import requests
 from dotenv import load_dotenv
 
 
-def send_photo_loop(bot, delay_h=4):
-    services = ['NASA', 'NASA_EPIC', 'SPACE_X']
-    while True:
-        service = random.choice(services)
-        if service == 'NASA':
-            images = get_images_nasa(NASA_URL, nasa_key, img_limit=8)
-            image_urls = images.keys()
-            for image_url in image_urls:
-                bot.send_photo(chat_id=chat_id, photo=image_url, caption=images[image_url])
-                time.sleep(60 * 60 * delay_h)
-        if service == 'NASA_EPIC':
-            images = get_images_epic_nasa(NASA_EPIC_URL, nasa_key, img_limit=1)
-            for image_url in images:
-                bot.send_photo(chat_id=chat_id, photo=image_url, caption='Фоточки Земли ^-^')
-                time.sleep(60 * 60 * delay_h)
-        if service == 'SPACE_X':
-            response = requests.get(LATEST_LAUNCH_URL)
-            response.raise_for_status()
-            img_meta = response.json()
-            image_url = img_meta['links']['flickr']['original']
-            img_description = img_meta['links']['reddit']['launch']
-            if image_url:
-                bot.send_photo(chat_id=chat_id, photo=image_url, caption=f'Последний запуск SPACE_X {img_description}')
-                time.sleep(60 * 60 * delay_h)
+def send_photo(bot):
+    services = ['NASA', 'NASA_EPIC', 'SPACE_X', 'XKCD']
+    service = random.choice(services)
+
+    if service == 'NASA':
+        images = get_images_nasa(NASA_URL, nasa_key, img_limit=7)
+        image_urls = images.keys()
+        for image_url in image_urls:
+            bot.send_photo(chat_id=chat_id, photo=image_url, caption=images[image_url])
+
+    if service == 'NASA_EPIC':
+        images = get_images_epic_nasa(NASA_EPIC_URL, nasa_key, img_limit=1)
+        for image_url in images:
+            bot.send_photo(chat_id=chat_id, photo=image_url, caption='Фоточки Земли ^-^')
+
+    if service == 'SPACE_X':
+        response = requests.get(LATEST_LAUNCH_URL)
+        response.raise_for_status()
+        img_meta = response.json()
+        image_url = img_meta['links']['flickr']['original']
+        img_description = img_meta['links']['reddit']['launch']
+        if image_url:
+            bot.send_photo(chat_id=chat_id, photo=image_url, caption=f'Последний запуск SPACE_X {img_description}')
+
+    if service == 'XKCD':
+        max_comic_num = get_max_comic_num()
+        img_meta = get_xkcd_comic(id=random.randint(0, max_comic_num))
+        img_description = img_meta['alt']
+        img_name = img_meta['img']
+        bot.send_photo(chat_id=chat_id, photo=img_name, caption=f'{img_description}')
+
 
 def create_parser():
     parser = argparse.ArgumentParser(
@@ -56,4 +65,11 @@ if __name__ == '__main__':
         with open(args.p, 'rb') as file:
             bot.send_photo(chat_id=chat_id, photo=file)
     else:
-        send_photo_loop(bot, delay_h=args.d)
+        while True:
+            try:
+                send_photo(bot)
+                time.sleep(60 * 60 * args.d)
+            except requests.exceptions.ConnectionError as error:
+                print(error, file=sys.stderr)
+                print('Trying to reconnect over 30 seconds...')
+                time.sleep(30)
