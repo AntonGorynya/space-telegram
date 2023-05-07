@@ -9,8 +9,7 @@ NASA_EPIC_URL = 'https://api.nasa.gov/EPIC/api/natural/images'
 NASA_EPIC_PIC_URL = 'https://api.nasa.gov/EPIC/archive/natural/{date}/png/{image}.png'
 
 
-def get_images_epic_nasa(epic_nasa_url, nasa_key):
-    max_index = 4
+def get_images_epic_nasa(epic_nasa_url, nasa_key, img_limit=4):
     response = requests.get(epic_nasa_url, params={'api_key': nasa_key})
     response.raise_for_status()
     images = []
@@ -25,13 +24,13 @@ def get_images_epic_nasa(epic_nasa_url, nasa_key):
         )
         img_url = parsed_img_url._replace(query=f'api_key={nasa_key}').geturl()
         images.append(img_url)
-        if max_index <= index:
+        if img_limit <= index+1:
             break
     return images
 
 
-def fetch_epic_nasa(nasa_url, nasa_key):
-    images = get_images_epic_nasa(nasa_url, nasa_key)
+def fetch_epic_nasa(nasa_url, nasa_key, img_limit=4):
+    images = get_images_epic_nasa(nasa_url, nasa_key, img_limit=img_limit)
     for index, url in enumerate(images):
         download_image(url, f'./images/nasa_epic_{index}.png')
 

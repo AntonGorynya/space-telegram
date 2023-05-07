@@ -14,8 +14,7 @@ def get_file_extension(url):
     return extension
 
 
-def get_images_nasa(nasa_url, nasa_key):
-    img_limit = 30
+def get_images_nasa(nasa_url, nasa_key, img_limit=30):
     params = {'api_key': nasa_key, 'count': img_limit}
     response = requests.get(nasa_url, params=params)
     response.raise_for_status()
@@ -27,9 +26,9 @@ def get_images_nasa(nasa_url, nasa_key):
     return images
 
 
-def fetch_nasa(nasa_url, nasa_key):
+def fetch_nasa(nasa_url, nasa_key, img_limit=30):
     image_descriptions = read_db()
-    images = get_images_nasa(nasa_url, nasa_key)
+    images = get_images_nasa(nasa_url, nasa_key, img_limit=img_limit)
     for index, url in enumerate(images):
         extension = get_file_extension(url)
         img_name = f'nasa_{index}{extension}'
