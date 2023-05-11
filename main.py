@@ -12,6 +12,9 @@ import requests
 from dotenv import load_dotenv
 
 
+class EmptyUrlError(TypeError):
+    pass
+
 def send_photo(bot):
     services = ['NASA', 'NASA', 'NASA', 'NASA', 'NASA_EPIC', 'SPACE_X', 'XKCD']
     service = random.choice(services)
@@ -36,6 +39,8 @@ def send_photo(bot):
         img_description = img_meta['links']['reddit']['launch']
         if image_url:
             bot.send_photo(chat_id=chat_id, photo=image_url, caption=f'Последний запуск SPACE_X {img_description}')
+        else:
+            raise EmptyUrlError
 
     if service == 'XKCD':
         max_comic_num = get_max_comic_num()
@@ -43,6 +48,8 @@ def send_photo(bot):
         img_description = img_meta['alt']
         img_name = img_meta['img']
         bot.send_photo(chat_id=chat_id, photo=img_name, caption=f'{img_description}')
+        return True
+    return False
 
 
 def create_parser():
@@ -75,4 +82,6 @@ if __name__ == '__main__':
                 print('Trying to reconnect over 30 seconds...')
                 time.sleep(30)
             except telegram.error.BadRequest as error:
+                print(error, file=sys.stderr)
+            except EmptyUrlError as error:
                 print(error, file=sys.stderr)
