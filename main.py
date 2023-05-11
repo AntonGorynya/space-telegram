@@ -48,8 +48,6 @@ def send_photo(bot):
         img_description = img_meta['alt']
         img_name = img_meta['img']
         bot.send_photo(chat_id=chat_id, photo=img_name, caption=f'{img_description}')
-        return True
-    return False
 
 
 def create_parser():
