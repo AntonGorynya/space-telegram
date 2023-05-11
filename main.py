@@ -13,14 +13,15 @@ from dotenv import load_dotenv
 
 
 def send_photo(bot):
-    services = ['NASA', 'NASA_EPIC', 'SPACE_X', 'XKCD']
+    services = ['NASA', 'NASA', 'NASA', 'NASA', 'NASA_EPIC', 'SPACE_X', 'XKCD']
     service = random.choice(services)
 
     if service == 'NASA':
-        images = get_images_nasa(NASA_URL, nasa_key, img_limit=7)
+        images = get_images_nasa(NASA_URL, nasa_key, img_limit=1)
         image_urls = images.keys()
         for image_url in image_urls:
-            bot.send_photo(chat_id=chat_id, photo=image_url, caption=images[image_url])
+            image_description = (images[image_url][:1022] + '..') if len(images[image_url]) > 1024 else images[image_url]
+            bot.send_photo(chat_id=chat_id, photo=image_url, caption=image_description)
 
     if service == 'NASA_EPIC':
         images = get_images_epic_nasa(NASA_EPIC_URL, nasa_key, img_limit=1)
@@ -73,3 +74,5 @@ if __name__ == '__main__':
                 print(error, file=sys.stderr)
                 print('Trying to reconnect over 30 seconds...')
                 time.sleep(30)
+            except telegram.error.BadRequest as error:
+                print(error, file=sys.stderr)
