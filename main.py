@@ -83,3 +83,5 @@ if __name__ == '__main__':
                 print(error, file=sys.stderr)
             except EmptyUrlError as error:
                 print(error, file=sys.stderr)
+            except requests.exceptions.HTTPError as error:
+                print(error, file=sys.stderr)
